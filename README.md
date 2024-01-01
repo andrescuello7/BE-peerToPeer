@@ -2,7 +2,7 @@
 
 
 <p align="center">
-  <img align="center" width="200" src="https://i.ibb.co/PcRw7Kg/Captura-de-pantalla-2024-01-01-a-la-s-18-51-06.png" />
+  <img align="center" width="100%" src="https://i.ibb.co/PcRw7Kg/Captura-de-pantalla-2024-01-01-a-la-s-18-51-06.png" />
 </p>
 
 This project implements a peer-to-peer network to facilitate connection and communication between different nodes in a decentralized network architecture. Peer-to-peer networking allows nodes to communicate directly with each other without depending on a central server.
