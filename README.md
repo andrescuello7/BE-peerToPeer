@@ -19,22 +19,14 @@ This project implements a peer-to-peer network to facilitate connection and comm
 
 Clone this repository:
 
-    ```bash
     git clone https://github.com/andrescuello7/BE-peerToPeer
-   
     cd BE-peerToPeer/
-    ````
 
 #### Genesis
 
-    ```bash
     PORT=3000 node index.js
-    ````
 
 #### Peer or Node
 
-    ```
     # Connection is IP:PORT
-
     PORT=3000 node index.js 127.0.0.1:3000
-    ```
