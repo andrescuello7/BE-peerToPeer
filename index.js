@@ -20,23 +20,11 @@ class Server {
                 try {
                     const data = JSON.parse(buffer.toString());
                     if (data.length) {
-                        for (const connection of data) {
-                            const isCurrentHost = connection.port === process.env.PORT;
-                            const isValidConnection = connection.port !== undefined && connection.host !== undefined;
-                            const isNotConnected = !this.hostConnecteds.some(item => item.port === connection.port && item.host === connection.host);
-
-                            if (!isCurrentHost && isValidConnection && isNotConnected) {
-                                this.Connected(
-                                    connection.host,
-                                    connection.port,
-                                    data,
-                                    { port: process.env.PORT, host: '127.0.0.1' }
-                                );
-                            }
-                        }
+                        // connection with list of users
+                        this.ConnectPeers(data);
                     } else {
                         // connection with user initialized
-                        this.Connected(data.host, data.port, data);
+                        this.ConnectPeer(data.host, data.port, data);
                         console.log(`\x1b[32m[+]\x1b[0m ${data.host}:${data.port}`);
                     }
                 } catch (error) {
@@ -47,13 +35,12 @@ class Server {
             });
             // socket connection is disconnected
             socket.on('close', () => {
-                console.log(`Socket cerrado: ${socket.remoteAddress}:${socket.remotePort}`);
-                // return { port: process.env.PORT, host: '127.0.0.1' };
+                console.log(`Socket closed`);
             });
         });
         // server error 
         server.on('error', (error) => {
-            console.error('Error en el servidor:', error.message);
+            console.error('Error in the server:', error.message);
         });
         // running server with port and host for default
         server.listen({ host: '127.0.0.1', port: process.env.PORT }, () => {
@@ -68,18 +55,21 @@ class Server {
             const HIS_HOST = connect[0];
             const HIS_PORT = connect[1];
 
-            this.Connected(HIS_HOST, HIS_PORT, false, { port: process.env.PORT, host: '127.0.0.1' });
+            this.ConnectPeer(HIS_HOST, HIS_PORT, { port: HIS_PORT, host: HIS_HOST }, { port: process.env.PORT, host: '127.0.0.1' });
             console.log(`\x1b[32m[+]\x1b[0m ${HIS_HOST}:${HIS_PORT}`);
         } catch (error) { }
     }
 
     // method of conected with socket
-    Connected(host, port, data, myCredentials) {
+    ConnectPeer(host, port, data, myCredentials) {
         const _socket = createConnection({ host, port }, () => {
-            if (data) {
+            if (data.length > 0) {
+                this.hostConnecteds.concat(data);
+            } else {
                 this.hostConnecteds.push(data)
             }
             this.socketsConnecteds.push(_socket);
+            console.log(this.hostConnecteds);
             _socket.write(JSON.stringify(myCredentials || this.hostConnecteds));
         })
     }
@@ -87,7 +77,29 @@ class Server {
     // generatod of message and send info
     Message(buffer) {
         for (const socket of this.socketsConnecteds) {
-            socket.write(buffer.toString().trim());
+            try {
+                if (!socket._writableState.ended) {
+                    socket.write(buffer.toString().trim());
+                }
+            } catch (error) { }
+        }
+    }
+
+    // method of conected with socket for list of connections
+    ConnectPeers(data) {
+        for (const connection of data) {
+            const isCurrentHost = connection.port === process.env.PORT;
+            const isValidConnection = connection.port !== undefined && connection.host !== undefined;
+            const isNotConnected = !this.hostConnecteds.some(peer => peer.port === connection.port && peer.host === connection.host);
+
+            if (!isCurrentHost && isValidConnection && isNotConnected) {
+                this.ConnectPeer(
+                    connection.host,
+                    connection.port,
+                    data,
+                    { port: process.env.PORT, host: '127.0.0.1' }
+                );
+            }
         }
     }
 }
