@@ -69,7 +69,6 @@ class Server {
                 this.hostConnecteds.push(data)
             }
             this.socketsConnecteds.push(_socket);
-            console.log(this.hostConnecteds);
             _socket.write(JSON.stringify(myCredentials || this.hostConnecteds));
         })
     }
