@@ -43,8 +43,8 @@ class Server {
             console.error('Error in the server:', error.message);
         });
         // running server with port and host for default
-        server.listen({ host: '127.0.0.1', port: process.env.PORT }, () => {
-            console.log(`Server constructor ${'127.0.0.1'}:${process.env.PORT}`);
+        server.listen({ host: process.env.HOST, port: process.env.PORT }, () => {
+            console.log(`Server constructor ${process.env.HOST}:${process.env.PORT}`);
         });
     }
 
@@ -55,7 +55,7 @@ class Server {
             const HIS_HOST = connect[0];
             const HIS_PORT = connect[1];
 
-            this.ConnectPeer(HIS_HOST, HIS_PORT, { port: HIS_PORT, host: HIS_HOST }, { port: process.env.PORT, host: '127.0.0.1' });
+            this.ConnectPeer(HIS_HOST, HIS_PORT, { port: HIS_PORT, host: HIS_HOST }, { port: process.env.PORT, host: process.env.HOST });
             console.log(`\x1b[32m[+]\x1b[0m ${HIS_HOST}:${HIS_PORT}`);
         } catch (error) { }
     }
@@ -96,7 +96,7 @@ class Server {
                     connection.host,
                     connection.port,
                     data,
-                    { port: process.env.PORT, host: '127.0.0.1' }
+                    { port: process.env.PORT, host: process.env.HOST }
                 );
             }
         }
